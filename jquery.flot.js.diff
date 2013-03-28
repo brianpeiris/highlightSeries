@@ -1,32 +1,32 @@
---- .\original_jquery.flot.js	2010-05-10 05:22:12.266000000 -0400
-+++ .\jquery.flot.js	2010-05-10 05:22:31.658000000 -0400
-@@ -147,6 +147,7 @@
+--- .\jquery.flot.js
++++ .\jquery.flot.js
+@@ -559,6 +559,7 @@
          plot.setData = setData;
          plot.setupGrid = setupGrid;
          plot.draw = draw;
 +        plot.drawSeries = drawSeries;
          plot.getPlaceholder = function() { return placeholder; };
-         plot.getCanvas = function() { return canvas; };
+         plot.getCanvas = function() { return surface.element; };
          plot.getPlotOffset = function() { return plotOffset; };
-@@ -164,6 +165,7 @@
+@@ -587,6 +588,7 @@
          plot.highlight = highlight;
          plot.unhighlight = unhighlight;
          plot.triggerRedrawOverlay = triggerRedrawOverlay;
 +        plot.drawOverlay = drawOverlay;
          plot.pointOffset = function(point) {
-             return { left: parseInt(axisSpecToRealAxis(point, "xaxis").p2c(+point.x) + plotOffset.left),
-                      top: parseInt(axisSpecToRealAxis(point, "yaxis").p2c(+point.y) + plotOffset.top) };
-@@ -1059,7 +1061,7 @@
-                 drawGrid();
+             return {
+                 left: parseInt(xaxes[axisNumber(point, "x") - 1].p2c(+point.x) + plotOffset.left, 10),
+@@ -1710,7 +1712,7 @@
  
-             for (var i = 0; i < series.length; ++i)
+             for (var i = 0; i < series.length; ++i) {
+                 executeHooks(hooks.drawSeries, [ctx, series[i]]);
 -                drawSeries(series[i]);
 +                drawSeries(series[i], ctx);
+             }
  
              executeHooks(hooks.draw, [ctx]);
-             
-@@ -1265,16 +1267,16 @@
-             placeholder.append(html.join(""));
+@@ -2041,16 +2043,16 @@
+             });
          }
  
 -        function drawSeries(series) {
@@ -41,31 +41,31 @@
 -                drawSeriesPoints(series);
 +                drawSeriesPoints(series, ctx);
          }
-         
+ 
 -        function drawSeriesLines(series) {
 +        function drawSeriesLines(series, ctx) {
              function plotLine(datapoints, xoffset, yoffset, axisx, axisy) {
                  var points = datapoints.points,
                      ps = datapoints.pointsize,
-@@ -1522,7 +1524,7 @@
+@@ -2304,7 +2306,7 @@
              ctx.restore();
          }
  
 -        function drawSeriesPoints(series) {
 +        function drawSeriesPoints(series, ctx) {
-             function plotPoints(datapoints, radius, fillStyle, offset, circumference, axisx, axisy) {
+             function plotPoints(datapoints, radius, fillStyle, offset, shadow, axisx, axisy, symbol) {
                  var points = datapoints.points, ps = datapoints.pointsize;
-                 
-@@ -1675,7 +1677,7 @@
+ 
+@@ -2477,7 +2479,7 @@
              }
          }
-         
+ 
 -        function drawSeriesBars(series) {
 +        function drawSeriesBars(series, ctx) {
              function plotBars(datapoints, barLeft, barRight, offset, fillStyleCallback, axisx, axisy) {
                  var points = datapoints.points, ps = datapoints.pointsize;
-                 
-@@ -1942,7 +1944,7 @@
+ 
+@@ -2808,7 +2810,7 @@
  
                  if (hi.series.bars.show)
                      drawBarHighlight(hi.series, hi.point);
@@ -74,8 +74,3 @@
                      drawPointHighlight(hi.series, hi.point);
              }
              octx.restore();
-@@ -2116,4 +2118,3 @@
-     }
-     
- })(jQuery);
--

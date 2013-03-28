@@ -2,8 +2,8 @@
 Flot plugin for highlighting series.
 
 	highlightSeries: {
-		autoHighlight: true (default) or false
-		, color: color
+		autoHighlight: true (default) or false,
+		color: color
 	}
 
 If "autoHighlight" is true (the default) and the plot's "hoverable" setting is true
@@ -35,10 +35,10 @@ unhighlight a series manually by specifying a series by label, index or object.
 
 	var options = {
 		highlightSeries: {
-			autoHighlight: true
-			, color: "black"
-			, _optimized: true
-			, _debug: false
+			autoHighlight: true,
+			color: "black",
+			_optimized: true,
+			_debug: false
 		}
 	};
 
@@ -48,8 +48,9 @@ unhighlight a series manually by specifying a series by label, index or object.
 
 		function highlightSeries(series, color) {
 			var
-				seriesAndIndex = getSeriesAndIndex(series)
-				, options = plot.getOptions().highlightSeries;
+				seriesAndIndex = getSeriesAndIndex(series),
+				options = plot.getOptions().highlightSeries,
+                start;
 
 			series = seriesAndIndex[1];
 
@@ -58,7 +59,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 
 			series.color = color || options.color;
 
-			if (options._debug) { var start = new Date(); }
+			if (options._debug) { start = new Date(); }
 			if (options._optimized) {
 				if (plot.drawOverlay && options._debug) {
 					plot.drawOverlay();
@@ -73,17 +74,18 @@ unhighlight a series manually by specifying a series by label, index or object.
 			if (options._debug) { 
 				log("Time taken to highlight:", (new Date()).getTime() - start.getTime(), "ms");
 			}
-		};
+		}
 		plot.highlightSeries = highlightSeries;
 
 		function unHighlightSeries(series) {
 			var
-				seriesAndIndex = getSeriesAndIndex(series)
-				, options = plot.getOptions().highlightSeries;
+				seriesAndIndex = getSeriesAndIndex(series),
+				options = plot.getOptions().highlightSeries,
+                start;
 
 			seriesAndIndex[1].color = originalColors[seriesAndIndex[0]];
 
-			if (options._debug) { var start = new Date(); }
+			if (options._debug) { start = new Date(); }
 			if (options._optimized) {
 				delete highlightedSeries[seriesAndIndex[0]];
 				if (plot.drawOverlay && options._debug) {
@@ -99,7 +101,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 			if (options._debug) { 
 				log("Time taken to un-highlight:", (new Date()).getTime() - start.getTime(), "ms");
 			}
-		};
+		}
 		plot.unHighlightSeries = unHighlightSeries;
 
 		plot.hooks.bindEvents.push(function (plot, eventHolder) {
@@ -135,9 +137,9 @@ unhighlight a series manually by specifying a series by label, index or object.
 				for (var ii = 0; ii < allPlotSeries.length; ii++) {
 					var plotSeries = allPlotSeries[ii];
 					if (
-						plotSeries === series
-						|| plotSeries.label === series
-						|| plotSeries.label === series.label
+						plotSeries === series ||
+                        plotSeries.label === series ||
+                        plotSeries.label === series.label
 					) {
 						return [ii, plotSeries];
 					}
