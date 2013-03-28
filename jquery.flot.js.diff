@@ -1,5 +1,5 @@
---- .\jquery.flot.js.orig	Thu Mar 28 11:12:20 2013
-+++ .\jquery.flot.js	Thu Mar 28 11:07:36 2013
+--- .\jquery.flot.js
++++ .\jquery.flot.js
 @@ -559,6 +559,7 @@
          plot.setData = setData;
          plot.setupGrid = setupGrid;
