@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset=utf-8 />
+
+		<title>The highlightSeries plugin for Flot</title>
+
+		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/reset-fonts-grids/reset-fonts-grids.css">
+		<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/base/base-min.css">
+		<style type="text/css">
+			h2 { margin-bottom: 0.2em; } 
+			#options { width: 20em; margin-bottom: 1em; }
+			input { margin: 0.2em; }
+		</style>
+
+		<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+		<script type="text/javascript" src="jquery.flot.js"></script>
+		<script type="text/javascript" src="jquery.flot.highlightSeries.js"></script>
+	</head>
+	<body>
+	<div id="doc">
+		<div id="hd">
+			<h1>The highlightSeries plugin for Flot</h1>
+		</div>
+		<div id="bd">
+
+		<h2>About</h2>
+		<p>
+			The highlightSeries plugin for <a href="http://www.flotcharts.org/">Flot</a> allows you to highlight whole series on a plot. This can happen automatically, via the autoHighlight setting, or manually, via the highlightSeries and unHighlightSeries methods.
+			The plugin is up to 3 times faster than manually changing the color of a series and redrawing the entire plot.
+			It also has the added benefit of highlighting the series in an overlay which gives the appearance of having moved the series to the foreground and practically elminiates the time needed to clear the highlight.<br />
+			<a href="http://github.com/brianpeiris/highlightSeries">highlighSeries is on GitHub!</a>
+		</p>
+
+		<h2>Usage</h2>
+		<p>
+			<strong>The highlightSeries plugin is compatible with Flot 0.7 and requires that you <a href="http://en.wikipedia.org/wiki/Patch_(Unix)">patch</a> the Flot source code</strong> since it uses a slightly modified version of an internal function. See the <a href="jquery.flot.js.diff?v=0.7">patch file</a>. Once the patch is applied, you simply need to include 
+			<a href="jquery.flot.highlightSeries.js?v=0.7">jquery.flot.highlightSeries.js</a> in a <code>script</code> tag. View the source of this page for further details.
+		</p>
+
+		<h2>Demo</h2>
+		<p><strong>Hover over the labels in the plot's legend</strong> to highlight the corresponding series or enable the "plot" highlighting mode to highlight series as you hover over the plot.</p>
+
+		<div id="options">
+			<div class="yui-g">
+				<div class="yui-u first"><span>shadows:</span></div>
+				<div class="yui-u yui-g">
+					<div class="yui-u first"><label><input id="showShadows" name="shadows" type="radio" checked="checked" />on</label></div>
+					<label class="yui-u"><input type="radio" name="shadows" />off</label>
+				</div>
+			</div>
+			<div class="yui-g">
+				<div class="yui-u first"><span>points:</span></div>
+				<div class="yui-u yui-g">
+					<div class="yui-u first"><label><input id="showPoints" name="points" type="radio" checked="checked" />on</label></div>
+					<label class="yui-u"><input type="radio" name="points" />off</label>
+				</div>
+			</div>
+			<div class="yui-g">
+				<div class="yui-u first"><span>highlighting mode:</span></div>
+				<div class="yui-u yui-g">
+					<div class="yui-u first"><label><input name="autohighlight" type="radio" checked="checked" />legend</label></div>
+					<label class="yui-u"><input type="radio" id="useAutoHighlight" name="autohighlight" />plot</label>
+				</div>
+			</div>
+			<div class="yui-g">
+				<div class="yui-u first"><span>use highlightSeries:</span></div>
+				<div class="yui-u yui-g">
+					<div class="yui-u first"><label><input id="useHighlightSeries" name="mode" type="radio" checked="checked" />on</label></div>
+					<label class="yui-u"><input type="radio" name="mode" />off</label>
+				</div>
+			</div>
+			<div class="yui-g">
+				<div class="yui-u first"><span>measure times:</span></div>
+				<div class="yui-u yui-g">
+					<div class="yui-u first"><label><input id="measureTimes" name="measure" type="radio" checked="checked" />on</label></div>
+					<label class="yui-u"><input type="radio" name="measure" />off</label>
+				</div>
+			</div>
+		</div>
+
+		<span id="out">&nbsp;</span>
+
+		<div id="placeholder" style="width:700px; height:300px"></div>
+
+		<script type="text/javascript">
+			/** Sample datapoints for the plot. **/
+			var sin = [], cos = [], sinTwo = [], cosTwo = [];
+			for (var i = 0; i < 100; i += 0.5) {
+				sin.push([i, Math.sin(i)]);
+				cos.push([i, Math.cos(i)]);
+				sinTwo.push([i, Math.sin(i) / 2 - 2]);
+				cosTwo.push([i, Math.cos(i) / 2 + 2]);
+			}
+
+			var
+				plot,
+				checked = ":checked",
+				showPoints = $("#showPoints"),
+				showShadows = $("#showShadows"),
+				useAutoHighlight = $("#useAutoHighlight"),
+				useHighlightSeries = $("#useHighlightSeries"),
+				measureTimes = $("#measureTimes");
+			function initializePlot() {
+				plot = $.plot(
+					$("#placeholder"),
+					[
+						{ data: sin, label: "sin(x)" },
+						{ data: cos, label: "cos(x)" },
+						{ data: sinTwo, label: "sinTwo(x)" },
+						{ data: cosTwo, label: "cosTwo(x)" }
+					],
+					{
+						series: {
+							points: { show: showPoints.is(checked) },
+							lines: { show: true },
+							shadowSize: showShadows.is(checked) ? 3 : 0
+						},
+						grid: { hoverable: useAutoHighlight.is(checked) },
+						legend: { position: "nw" },
+						highlightSeries: {
+							color: "black",
+							_optimized: useHighlightSeries.is(checked),
+							_debug: measureTimes.is(checked)
+						}
+					}
+				);
+				$('#out').html('&nbsp;');
+			}
+			initializePlot();
+
+			$(".legend tr").live(
+				"mouseenter",
+				function () {
+					if (useAutoHighlight.is(checked)) { return; }
+					plot.highlightSeries($(this).text());
+				}
+			);
+			$(".legend tr").live(
+				"mouseleave",
+				function () {
+					if (useAutoHighlight.is(checked)) { return; }
+					plot.unHighlightSeries($(this).text());
+				}
+			);
+
+			$("#options input").change(initializePlot);
+		</script>
+		</div>
+	</div>
+	</body>
+</html>
