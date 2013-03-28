@@ -1,5 +1,5 @@
---- .\jquery.flot.js
-+++ .\jquery.flot.js
+--- .\jquery.flot.js.orig	Thu Mar 28 11:12:20 2013
++++ .\jquery.flot.js	Thu Mar 28 11:07:36 2013
 @@ -559,6 +559,7 @@
          plot.setData = setData;
          plot.setupGrid = setupGrid;
@@ -25,7 +25,7 @@
              }
  
              executeHooks(hooks.draw, [ctx]);
-@@ -2041,16 +2043,16 @@
+@@ -2038,16 +2040,16 @@
              });
          }
  
@@ -47,7 +47,7 @@
              function plotLine(datapoints, xoffset, yoffset, axisx, axisy) {
                  var points = datapoints.points,
                      ps = datapoints.pointsize,
-@@ -2304,7 +2306,7 @@
+@@ -2301,7 +2303,7 @@
              ctx.restore();
          }
  
@@ -56,7 +56,7 @@
              function plotPoints(datapoints, radius, fillStyle, offset, shadow, axisx, axisy, symbol) {
                  var points = datapoints.points, ps = datapoints.pointsize;
  
-@@ -2477,7 +2479,7 @@
+@@ -2474,7 +2476,7 @@
              }
          }
  
@@ -65,7 +65,7 @@
              function plotBars(datapoints, barLeft, barRight, offset, fillStyleCallback, axisx, axisy) {
                  var points = datapoints.points, ps = datapoints.pointsize;
  
-@@ -2808,7 +2810,7 @@
+@@ -2805,7 +2807,7 @@
  
                  if (hi.series.bars.show)
                      drawBarHighlight(hi.series, hi.point);
