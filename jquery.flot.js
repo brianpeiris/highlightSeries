@@ -40,12 +40,12 @@ Licensed under the MIT license.
 
 	// Add default styles for tick labels and other text
 
+	var STYLES = [
+		".flot-tick-label {font-size:smaller;color:#545454;}"
+	];
+
 	$(function() {
-		$("head").prepend([
-			"<style id='flot-default-styles'>",
-			".flot-tick-label {font-size:smaller;color:#545454;}",
-			"</style>"
-		].join(""));
+		$("head").prepend("<style id='flot-default-styles'>" + STYLES.join("") + "</style>");
 	});
 
 	///////////////////////////////////////////////////////////////////////////
@@ -559,7 +559,6 @@ Licensed under the MIT license.
         plot.setData = setData;
         plot.setupGrid = setupGrid;
         plot.draw = draw;
-        plot.drawSeries = drawSeries;
         plot.getPlaceholder = function() { return placeholder; };
         plot.getCanvas = function() { return surface.element; };
         plot.getPlotOffset = function() { return plotOffset; };
@@ -588,7 +587,6 @@ Licensed under the MIT license.
         plot.highlight = highlight;
         plot.unhighlight = unhighlight;
         plot.triggerRedrawOverlay = triggerRedrawOverlay;
-        plot.drawOverlay = drawOverlay;
         plot.pointOffset = function(point) {
             return {
                 left: parseInt(xaxes[axisNumber(point, "x") - 1].p2c(+point.x) + plotOffset.left, 10),
@@ -1712,7 +1710,7 @@ Licensed under the MIT license.
 
             for (var i = 0; i < series.length; ++i) {
                 executeHooks(hooks.drawSeries, [ctx, series[i]]);
-                drawSeries(series[i], ctx);
+                drawSeries(series[i]);
             }
 
             executeHooks(hooks.draw, [ctx]);
@@ -1875,16 +1873,13 @@ Licensed under the MIT license.
                     ctx.beginPath();
                     xoff = yoff = 0;
                     if (axis.direction == "x")
-                        xoff = plotWidth + 1;
+                        xoff = plotWidth;
                     else
-                        yoff = plotHeight + 1;
+                        yoff = plotHeight;
 
                     if (ctx.lineWidth == 1) {
-                        if (axis.direction == "x") {
-                            y = Math.floor(y) + 0.5;
-                        } else {
-                            x = Math.floor(x) + 0.5;
-                        }
+                        x = Math.floor(x) + 0.5;
+                        y = Math.floor(y) + 0.5;
                     }
 
                     ctx.moveTo(x, y);
@@ -2043,16 +2038,16 @@ Licensed under the MIT license.
             });
         }
 
-        function drawSeries(series, ctx) {
+        function drawSeries(series) {
             if (series.lines.show)
-                drawSeriesLines(series, ctx);
+                drawSeriesLines(series);
             if (series.bars.show)
-                drawSeriesBars(series, ctx);
+                drawSeriesBars(series);
             if (series.points.show)
-                drawSeriesPoints(series, ctx);
+                drawSeriesPoints(series);
         }
 
-        function drawSeriesLines(series, ctx) {
+        function drawSeriesLines(series) {
             function plotLine(datapoints, xoffset, yoffset, axisx, axisy) {
                 var points = datapoints.points,
                     ps = datapoints.pointsize,
@@ -2306,7 +2301,7 @@ Licensed under the MIT license.
             ctx.restore();
         }
 
-        function drawSeriesPoints(series, ctx) {
+        function drawSeriesPoints(series) {
             function plotPoints(datapoints, radius, fillStyle, offset, shadow, axisx, axisy, symbol) {
                 var points = datapoints.points, ps = datapoints.pointsize;
 
@@ -2479,7 +2474,7 @@ Licensed under the MIT license.
             }
         }
 
-        function drawSeriesBars(series, ctx) {
+        function drawSeriesBars(series) {
             function plotBars(datapoints, barLeft, barRight, offset, fillStyleCallback, axisx, axisy) {
                 var points = datapoints.points, ps = datapoints.pointsize;
 
@@ -2810,7 +2805,7 @@ Licensed under the MIT license.
 
                 if (hi.series.bars.show)
                     drawBarHighlight(hi.series, hi.point);
-                else if (hi.series.points.show)
+                else
                     drawPointHighlight(hi.series, hi.point);
             }
             octx.restore();
@@ -2841,16 +2836,13 @@ Licensed under the MIT license.
             if (s == null && point == null) {
                 highlights = [];
                 triggerRedrawOverlay();
-                return;
             }
 
             if (typeof s == "number")
                 s = series[s];
 
-            if (typeof point == "number") {
-                var ps = s.datapoints.pointsize;
-                point = s.datapoints.points.slice(ps * point, ps * (point + 1));
-            }
+            if (typeof point == "number")
+                point = s.data[point];
 
             var i = indexOfHighlight(s, point);
             if (i != -1) {
