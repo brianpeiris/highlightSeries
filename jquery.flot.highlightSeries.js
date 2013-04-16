@@ -104,28 +104,33 @@ unhighlight a series manually by specifying a series by label, index or object.
 		}
 		plot.unHighlightSeries = unHighlightSeries;
 
+        var lastHighlighted = null;
+        function handlePlotHover (evt, pos, item) {
+            if (item && lastHighlighted !== item.series) {
+                for(var seriesIndex in highlightedSeries) {
+                    delete highlightedSeries[seriesIndex];
+                }
+                if (lastHighlighted) {
+                    unHighlightSeries(lastHighlighted);
+                }
+                lastHighlighted = item.series;
+                highlightSeries(item.series);
+            }
+            else if (!item && lastHighlighted) {
+                unHighlightSeries(lastHighlighted);
+                lastHighlighted = null;
+            }
+        }
+
 		plot.hooks.bindEvents.push(function (plot, eventHolder) {
 			if (!plot.getOptions().highlightSeries.autoHighlight) {
 				return;
 			}
-			
-			var lastHighlighted = null;
-			plot.getPlaceholder().bind("plothover", function (evt, pos, item) {
-				if (item && lastHighlighted !== item.series) {
-					for(var seriesIndex in highlightedSeries) {
-						delete highlightedSeries[seriesIndex];
-					}
-					if (lastHighlighted) {
-						unHighlightSeries(lastHighlighted);
-					}
-					lastHighlighted = item.series;
-					highlightSeries(item.series);
-				}
-				else if (!item && lastHighlighted) {
-					unHighlightSeries(lastHighlighted);
-					lastHighlighted = null;
-				}
-			});
+			plot.getPlaceholder().bind("plothover", handlePlotHover);
+		});
+
+		plot.hooks.shutdown.push(function (plot) {
+			plot.getPlaceholder().unbind("plothover", handlePlotHover);
 		});
 
 		function getSeriesAndIndex(series) {
@@ -139,7 +144,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 					if (
 						plotSeries === series ||
                         plotSeries.label === series ||
-                        plotSeries.label === series.label
+                        (series.label && plotSeries.label === series.label)
 					) {
 						return [ii, plotSeries];
 					}
@@ -158,6 +163,6 @@ unhighlight a series manually by specifying a series by label, index or object.
 		init: init,
 		options: options,
 		name: "highlightSeries",
-		version: "1.0"
+		version: "1.1"
 	});
 })(jQuery);
