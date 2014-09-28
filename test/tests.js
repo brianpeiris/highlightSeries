@@ -80,6 +80,6 @@ asyncTest('highlight overwritten plot test', function() {
         start();
     });
 
-    var overlay = placeholder.find('.overlay');
+    var overlay = placeholder.find('.flot-overlay');
     overlay.simulate('mousemove', {clientX: overlay.offset().left + 700, clientY: overlay.offset().top + 50});
 });
