@@ -41,12 +41,17 @@ unhighlight a series manually by specifying a series by label, index or object.
 			_debug: false
 		}
 	};
+    window.global_highlightSeries_counter = 0;
 
 	function init(plot) {
+        window.global_highlightSeries_counter += 1;
+        var highlightSeries_counter = window.global_highlightSeries_counter;
+        console.log('highlightSeries init', highlightSeries_counter);
 		var highlightedSeries = {};
 		var originalColors = {};
 
 		function highlightSeries(series, color) {
+            console.log('highlightSeries highlightSeries', highlightSeries_counter);
 			var
 				seriesAndIndex = getSeriesAndIndex(series),
 				options = plot.getOptions().highlightSeries,
@@ -71,13 +76,14 @@ unhighlight a series manually by specifying a series by label, index or object.
 			else {
 				plot.draw();
 			}
-			if (options._debug) { 
+			if (options._debug) {
 				log("Time taken to highlight:", (new Date()).getTime() - start.getTime(), "ms");
 			}
 		}
 		plot.highlightSeries = highlightSeries;
 
 		function unHighlightSeries(series) {
+            console.log('highlightSeries unHighlightSeries', highlightSeries_counter);
 			var
 				seriesAndIndex = getSeriesAndIndex(series),
 				options = plot.getOptions().highlightSeries,
@@ -98,7 +104,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 			else {
 				plot.draw();
 			}
-			if (options._debug) { 
+			if (options._debug) {
 				log("Time taken to un-highlight:", (new Date()).getTime() - start.getTime(), "ms");
 			}
 		}
@@ -106,6 +112,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 
         var lastHighlighted = null;
         function handlePlotHover (evt, pos, item) {
+            console.log('highlightSeries handlePlotHover', highlightSeries_counter);
             if (item && lastHighlighted !== item.series) {
                 for(var seriesIndex in highlightedSeries) {
                     delete highlightedSeries[seriesIndex];
@@ -123,6 +130,7 @@ unhighlight a series manually by specifying a series by label, index or object.
         }
 
 		plot.hooks.bindEvents.push(function (plot, eventHolder) {
+            console.log('highlightSeries bindEvents', highlightSeries_counter);
 			if (!plot.getOptions().highlightSeries.autoHighlight) {
 				return;
 			}
@@ -130,10 +138,12 @@ unhighlight a series manually by specifying a series by label, index or object.
 		});
 
 		plot.hooks.shutdown.push(function (plot) {
+            console.log('highlightSeries shutdown', highlightSeries_counter);
 			plot.getPlaceholder().unbind("plothover", handlePlotHover);
 		});
 
 		function getSeriesAndIndex(series) {
+            console.log('highlightSeries getSeriesAndIndex', arguments, highlightSeries_counter);
 			var allPlotSeries = plot.getData();
 			if (typeof series == "number") {
 				return [series, allPlotSeries[series]];
@@ -153,6 +163,7 @@ unhighlight a series manually by specifying a series by label, index or object.
 		}
 
 		plot.hooks.drawOverlay.push(function (plot, ctx) {
+            console.log('highlightSeries drawOverlay', highlightSeries_counter);
 			for(var seriesIndex in highlightedSeries) {
 				plot.drawSeries(highlightedSeries[seriesIndex], ctx);
 			}
